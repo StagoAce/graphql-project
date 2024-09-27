@@ -45,7 +45,22 @@ class CreateClienteMutation(graphene.Mutation):
         else:
             raise Exception('Error al consumir la API')
 
-        
+class DeleteClienteMutation(graphene.Mutation):
+    class Arguments:
+        cedula = graphene.ID(required=True)
+    
+    message = graphene.String()
+    success = graphene.Boolean()
+
+    def mutate(self, info, cedula):
+        url = BASE_URL + cedula + "/"
+        query = ""
+        json_query = {'query': query}
+        response = requests.delete(url, json=json_query)
+        if response.status_code == 200 or response.status_code == 204:
+           return DeleteClienteMutation(success=True,message="Cliente deleted")
+        else:
+            return DeleteClienteMutation(success=False, message=f'Error al eliminar el cliente: {response.status_code} - {response.text}')
 
 class Query(graphene.ObjectType):
     clientes = graphene.List(ClienteType)
@@ -79,3 +94,4 @@ class Query(graphene.ObjectType):
         
 class ClientesMutation(graphene.ObjectType):
     create_cliente = CreateClienteMutation.Field()
+    delete_cliente = DeleteClienteMutation.Field() 
