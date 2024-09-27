@@ -2,9 +2,10 @@ import graphene
 from .schema_clientes import Query as ClientesQuery, ClientesMutation
 from .schema_porcinos import Query as PorcinosQuery
 from .schema_alimentos import Query as AlimentosQuery, AlimentosMutation
+from .schema_porcinos_alimentacion import Query as PorcinosAlimentosQuery
 
 # Unificar consultas y mutaciones en el esquema
-class Query(ClientesQuery,PorcinosQuery, AlimentosQuery, graphene.ObjectType):
+class Query(ClientesQuery,PorcinosQuery, AlimentosQuery,PorcinosAlimentosQuery, graphene.ObjectType):
     pass
 
 class Mutation(ClientesMutation,AlimentosMutation, graphene.ObjectType):
