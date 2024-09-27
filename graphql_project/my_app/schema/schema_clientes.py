@@ -108,7 +108,7 @@ class UpdateClienteMutation(graphene.Mutation):
             )
             return UpdateClienteMutation(message="Actualizado con exito",cliente=cliente)
         else:
-            return DeleteClienteMutation(message=f'Error al eliminar el cliente: {response.status_code} - {response.text}')
+            return UpdateClienteMutation(message=f'Error al eliminar el cliente: {response.status_code} - {response.text}')
 
 class Query(graphene.ObjectType):
     clientes = graphene.List(ClienteType)
