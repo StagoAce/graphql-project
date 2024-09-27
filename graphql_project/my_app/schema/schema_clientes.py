@@ -62,6 +62,54 @@ class DeleteClienteMutation(graphene.Mutation):
         else:
             return DeleteClienteMutation(success=False, message=f'Error al eliminar el cliente: {response.status_code} - {response.text}')
 
+class UpdateClienteMutation(graphene.Mutation):
+    class Arguments:
+        cedula = graphene.ID(required = True)
+        nombre = graphene.String(required = False)
+        apellidos = graphene.String(required = False)
+        direccion = graphene.String(required = False)
+        telefono = graphene.Int(required = False)
+    
+    cliente = graphene.Field(ClienteType)
+    message = graphene.String()
+
+    def mutate(self, info, cedula, nombre=None, apellidos=None, direccion=None, telefono=None):
+       
+        get_url = BASE_URL + cedula + "/"
+        get_response = requests.get(get_url)
+
+        if get_response.status_code != 200:
+            raise Exception(f"Error al obtener los datos del cliente: {get_response.status_code}")
+
+        current_data = get_response.json()
+
+        # Si no se proporciona un campo, usa el valor actual del cliente
+        payload = {
+            "cedula": cedula,
+            "nombre": nombre if nombre is not None else current_data["nombre"],
+            "apellidos": apellidos if apellidos is not None else current_data["apellidos"],
+            "direccion": direccion if direccion is not None else current_data["direccion"],
+            "telefono": telefono if telefono is not None else current_data["telefono"],
+        }
+
+        # Realiza la solicitud de actualización
+        url = BASE_URL + cedula + "/"
+        response = requests.put(url, json=payload)
+
+        if response.status_code == 200:
+            data = response.json()
+            # Crear una instancia de ClienteType con los datos actualizados
+            cliente = ClienteType(
+                cedula=data['cedula'],
+                nombre=data['nombre'],
+                apellidos=data['apellidos'],
+                direccion=data['direccion'],
+                telefono=data['telefono']
+            )
+            return UpdateClienteMutation(message="Actualizado con exito",cliente=cliente)
+        else:
+            return DeleteClienteMutation(message=f'Error al eliminar el cliente: {response.status_code} - {response.text}')
+
 class Query(graphene.ObjectType):
     clientes = graphene.List(ClienteType)
     cliente = graphene.Field(ClienteType, cedula=graphene.ID())
@@ -95,3 +143,4 @@ class Query(graphene.ObjectType):
 class ClientesMutation(graphene.ObjectType):
     create_cliente = CreateClienteMutation.Field()
     delete_cliente = DeleteClienteMutation.Field() 
+    update_cliente = UpdateClienteMutation.Field()
