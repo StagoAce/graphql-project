@@ -22,18 +22,28 @@ class CreateClienteMutation(graphene.Mutation):
     cliente = graphene.Field(ClienteType)
 
     def mutate(self, info, cedula, nombre, apellidos, direccion, telefono):
-        cliente = Clientes(
-            cedula = cedula,
-            nombre = nombre,
-            apellidos = apellidos,
-            direccion = direccion,
-            telefono = telefono
-        )
+        payload = {
+            "cedula": cedula,
+            "nombre": nombre,
+            "apellidos": apellidos,
+            "direccion": direccion,
+            "telefono": telefono
+        }
 
         url = BASE_URL + ""
-        query = cliente
-        json_query = {'query': query}
-        response = requests.post(url, json=json_query)
+        response = requests.post(url, json=payload)
+        if response.status_code == 200 or response.status_code == 201:
+            data = response.json()
+            cliente = Clientes(
+                cedula=data["cedula"],
+                nombre=data["nombre"],
+                apellidos=data["apellidos"],
+                direccion=data["direccion"],
+                telefono=data["telefono"]
+            )
+            return CreateClienteMutation(cliente=cliente)
+        else:
+            raise Exception('Error al consumir la API')
 
         
 
@@ -67,5 +77,5 @@ class Query(graphene.ObjectType):
         else:
             return JsonResponse({'error': 'Error al consumir la API'}, status=response.status_code)
         
-class Mutation(graphene.ObjectType):
+class ClientesMutation(graphene.ObjectType):
     create_cliente = CreateClienteMutation.Field()
