@@ -11,6 +11,31 @@ class ClienteType(DjangoObjectType):
         model = Clientes
         fields = ("cedula", "nombre", "apellidos", "direccion", "telefono")
 
+class CreateClienteMutation(graphene.Mutation):
+    class Arguments:
+        cedula = graphene.Int()
+        nombre = graphene.String()
+        apellidos = graphene.String()
+        direccion = graphene.String()
+        telefono = graphene.Int()
+    
+    cliente = graphene.Field(ClienteType)
+
+    def mutate(self, info, cedula, nombre, apellidos, direccion, telefono):
+        cliente = Clientes(
+            cedula = cedula,
+            nombre = nombre,
+            apellidos = apellidos,
+            direccion = direccion,
+            telefono = telefono
+        )
+
+        url = BASE_URL + ""
+        query = cliente
+        json_query = {'query': query}
+        response = requests.post(url, json=json_query)
+
+        
 
 class Query(graphene.ObjectType):
     clientes = graphene.List(ClienteType)
@@ -43,4 +68,4 @@ class Query(graphene.ObjectType):
             return JsonResponse({'error': 'Error al consumir la API'}, status=response.status_code)
         
 class Mutation(graphene.ObjectType):
-    create_book = CreateBookMutation.Field()
+    create_cliente = CreateClienteMutation.Field()
