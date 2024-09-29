@@ -34,6 +34,7 @@ class Query(graphene.ObjectType):
             # Hacer solicitud para las razas
             razas_url = "http://127.0.0.1:8000/api/v1/razas/?razas=" + ",".join(map(str, razas_porcios))
             razas_response = requests.get(razas_url)
+
             # Hacer una solicitud en lote para obtener todos los clientes
             cliente_url = "http://127.0.0.1:8000/api/v1/clientes/?cedulas=" + ",".join(map(str, clientes_cedulas))
             cliente_response = requests.get(cliente_url)
@@ -84,13 +85,24 @@ class Query(graphene.ObjectType):
 
             # Obtener directamente la cédula del cliente desde el porcino
             cliente_cedula = data['clientes_cedula']
+            raza_porcino = data['razas_idrazas']
+
+            #Obtener raza
+            razas_url = f"http://127.0.0.1:8000/api/v1/razas/{raza_porcino}/"
+            raza_response = requests.get(razas_url)
 
             # Formar la URL para obtener los datos del cliente
             cliente_url = f"http://127.0.0.1:8000/api/v1/clientes/{cliente_cedula}/"
             cliente_response = requests.get(cliente_url)
 
             if cliente_response.status_code == 200:
+                raza_data = raza_response.json()
                 cliente_data = cliente_response.json()
+                
+                # Instancia de raza
+                raza_instance = RazaType(
+                    name  = raza_data['name']
+                )
 
                 # Crear la instancia de ClienteType
                 cliente_instance = ClienteType(
@@ -106,6 +118,7 @@ class Query(graphene.ObjectType):
                     idporcinos=data.get('idporcinos'),
                     edad=data.get('edad'),
                     peso=data.get('peso'),
+                    razas_idrazas=raza_instance,
                     clientes_cedula=cliente_instance  # Asigna la instancia de ClienteType
                 )
                 
