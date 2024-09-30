@@ -128,3 +128,63 @@ class Query(graphene.ObjectType):
         
         else:
             return JsonResponse({'error': 'Error al consumir la API de porcinos'}, status=response.status_code)
+
+class CreatePorcinoMutation(graphene.Mutation):
+    class Arguments:
+        edad = graphene.Int()
+        peso = graphene.Int()
+        razas_idrazas = graphene.Int()
+        clientes_cedula = graphene.Int()
+
+    porcino = graphene.Field(PorcinoType)
+
+    def mutate(self, info, edad, peso, razas_idrazas, clientes_cedula):
+        payload = {
+            "edad" : edad,
+            "peso" : peso,
+            "razas_idrazas" : razas_idrazas,
+            "clientes_cedula" : clientes_cedula
+        }
+
+        url = BASE_URL + ""
+        response = requests.post(url, json=payload)
+        if response.status_code == 200 or response.status_code == 201:
+            data = response.json()
+
+            # Hacer solicitud para las razas
+            razas_url = f"http://127.0.0.1:8000/api/v1/razas/{razas_idrazas}"
+            razas_response = requests.get(razas_url)
+            raza_data = razas_response.json()
+
+            # Hacer una solicitud en lote para obtener todos los clientes
+            cliente_url = f"http://127.0.0.1:8000/api/v1/clientes/{clientes_cedula}"
+            cliente_response = requests.get(cliente_url)
+            cliente_data = cliente_response.json()
+
+            raza_instance = RazaType(
+                idrazas=raza_data['idrazas'],
+                name=raza_data['name']
+            )
+
+            cliente_instance = ClienteType(
+                cedula=cliente_data['cedula'],
+                nombre=cliente_data['nombre'],
+                apellidos=cliente_data['apellidos'],
+                direccion=cliente_data['direccion'],
+                telefono=cliente_data['telefono']
+            )
+
+            porcino = PorcinoType(
+                idporcinos=data['idporcinos'],
+                edad=data['edad'],
+                peso=data['peso'],
+                razas_idrazas=raza_instance,  # Usar la respuesta de la API para la raza
+                clientes_cedula=cliente_instance  # Usar la respuesta de la API para el cliente
+            )
+            return CreatePorcinoMutation(porcino = porcino)
+        else:
+            raise Exception('Error al consumir la API ')
+
+
+class PorcinosMutation(graphene.ObjectType):
+    create_porcino = CreatePorcinoMutation.Field()
