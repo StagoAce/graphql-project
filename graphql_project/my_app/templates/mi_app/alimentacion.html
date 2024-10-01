@@ -66,10 +66,10 @@
                     <th class="table-header-custom" scope="col">Dosis</th>
                     <th class="table-header-custom" scope="col">Acciones</th>
                 </tr>
-                {% for alimentacion in alimentaciones %}
             </thead>
 
             <tbody>
+                {% for alimentacion in alimentaciones %}
                 <tr>
                     <td>{{alimentacion.idalimentacion}}</td>
                     <td>{{alimentacion.descripcion}}</td>
@@ -107,20 +107,18 @@
 
 </div>
 
-<!-- Modal modificar información del cliente -->
-<!-- Modal para editar la información del cliente -->
-
-
+<!-- Modal modificar información del alimento -->
+<!-- Modal para agregar la información del alimento -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Agregar cliente</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Agregar alimento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div>
-                    <form action="agregarAlimentacion" method="POST">
+                    <form id="agregarAlimentoForm">
                         {% csrf_token %}
 
                         <input type="hidden" id="idalimentacion" name="idalimentacion">
@@ -131,7 +129,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="dosis" class="form-label">Dosis:</label>
+                            <label for="number" class="form-label">Dosis:</label>
                             <input id="number" type="text" class="form-control" name="dosis" required>
                         </div>
 
@@ -158,38 +156,43 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <!-- Botón que confirma la eliminación -->
-                <a id="confirmarEliminarBtn" href="#" class="btn btn-danger">Eliminar</a>
+                <button type="button" class="btn btn-danger" onclick="confirmarEliminarAlimento()">Eliminar</button>
             </div>
         </div>
     </div>
 </div>
 
 
-<!-- Modal editar dosis -->
 
-<div class="modal fade" id="editarDosisModal" tabindex="-1" aria-labelledby="editarDosisLabel" aria-hidden="true">
+<!-- Modal de Edición de Alimento -->
+<div class="modal fade" id="editarAlimentoModal" tabindex="-1" aria-labelledby="editarAlimentoLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editarPorcinoLabel">Editar Información del porcino</h5>
+                <h5 class="modal-title" id="editarAlimentoLabel">Editar alimento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Formulario para actualizar el cliente -->
-                <form id="formEditarDosis" method="POST" action="#">
-                    {% csrf_token %}
-                    <!-- Campo para Cédula (no editable) -->
+                <form id="formEditarAlimento">
+                    <input type="hidden" id="modal-idalimentacion-mod" name="idalimentacion">
+
+                    <div class="mb-3">
+                        <label for="modal-descripcion-mod" class="form-label">Descripción:</label>
+                        <input id="modal-descripcion-mod" type="text" class="form-control" name="descripcion" required>
+                    </div>
+
                     <div class="mb-3">
                         <label for="modal-dosis-mod" class="form-label">Dosis:</label>
-                        <input id="modal-dosis-mod" type="text" class="form-control" name="dosis">
+                        <input id="modal-dosis-mod" type="number" class="form-control" name="dosis" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+
+                    <button type="button" class="btn btn-success" onclick="actualizarAlimento()">Actualizar alimento</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 
 {% block extra_js %}

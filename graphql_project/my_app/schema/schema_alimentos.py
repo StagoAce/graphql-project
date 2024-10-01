@@ -17,6 +17,7 @@ class CreateAlimentoMutation(graphene.Mutation):
         dosis = graphene.Float()
     
     alimento = graphene.Field(AlimentacionType)
+    success = graphene.Boolean()
 
     def mutate(self, info, descripcion, dosis):
         payload = {
@@ -33,9 +34,9 @@ class CreateAlimentoMutation(graphene.Mutation):
                 descripcion=data["descripcion"],
                 dosis=data["dosis"]
             )
-            return CreateAlimentoMutation(alimento=alimento)
+            return CreateAlimentoMutation(alimento=alimento, success = True)
         else:
-            raise Exception('Error al consumir la API')
+            raise Exception('Error al consumir la API', success = False)
 
 class DeleteAlimentoMutation(graphene.Mutation):
     class Arguments:
@@ -54,7 +55,6 @@ class DeleteAlimentoMutation(graphene.Mutation):
         else:
             return DeleteAlimentoMutation(success=False, message=f'Error al eliminar el alimento: {response.status_code} - {response.text}')
 
-
 class UpdateAlimentoMutation(graphene.Mutation):
     class Arguments:
         idalimentacion = graphene.ID(required = True)
@@ -63,6 +63,7 @@ class UpdateAlimentoMutation(graphene.Mutation):
     
     alimento = graphene.Field(AlimentacionType)
     message = graphene.String()
+    success = graphene.Boolean()
 
     def mutate(self, info, idalimentacion, descripcion=None, dosis=None):
        
@@ -93,9 +94,9 @@ class UpdateAlimentoMutation(graphene.Mutation):
                 descripcion=data['descripcion'],
                 dosis=data['dosis']
             )
-            return UpdateAlimentoMutation(message="Actualizado con exito",alimento=alimento)
+            return UpdateAlimentoMutation(message="Actualizado con exito",alimento=alimento, success=True)
         else:
-            return UpdateAlimentoMutation(message=f'Error al eliminar el cliente: {response.status_code} - {response.text}')
+            return UpdateAlimentoMutation(message=f'Error al eliminar el cliente: {response.status_code} - {response.text}', success=False)
 
 class Query(graphene.ObjectType):
     alimentos = graphene.List(AlimentacionType)

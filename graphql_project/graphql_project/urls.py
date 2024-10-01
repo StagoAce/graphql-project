@@ -24,5 +24,5 @@ urlpatterns = [
     path("graphql", GraphQLView.as_view(graphiql=True)),
     path("", views.index, name='index'),
     path("porcinos", views.porcinos, name='porcinos'),
-    path("alimentacion", views.porcinos, name='alimentacion'),
+    path("alimentacion", views.alimentacion, name='alimentacion'),
 ]
