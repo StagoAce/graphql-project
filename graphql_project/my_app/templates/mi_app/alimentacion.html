@@ -1,0 +1,201 @@
+{% extends 'mi_app/base.html' %}
+
+{% load static %}
+
+{% block title %} Inicio {% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid h-100 d-flex flex-column p-3 gap-3">
+    <div class="container-fluid d-flex flex-column p-3">
+        <div class="row">
+            <!-- Introduccion de la pagina -->
+            <div class="col  ">
+                <h1 class="display-3">Alimentación</h1>
+                <p class="">En este apartado encontraras la información importante sobre los planes o elementos
+                    requeridos para la alimentación de los porcinos registrados en la granja</p>
+                <button type="button" class="btn btn-success py-4 my-4" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    Registrar alimento y dosis
+                </button>
+            </div>
+
+            <!-- Información sobre botones disponibles para clientes registrados -->
+            <div class="col d-grid gap-3">
+                <div>
+                    <p>Las acciones disponibles para los clientes registrados son: </p>
+                </div>
+
+                <div>
+                    <button type="button" class="btn btn-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-trash" viewBox="0 0 16 16">
+                            <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                            <path
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                        </svg>
+                    </button>
+                    <span>Eliminar Alimento</span>
+                </div>
+
+                <div>
+                    <button type="button" class="btn btn-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path
+                                d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+                        </svg>
+                    </button>
+                    <span>Actualizar información del alimento </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de porcinos registrados en la base de datos -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="table-header-custom" scope="col">Id </th>
+                    <th class="table-header-custom" scope="col">Descripción</th>
+                    <th class="table-header-custom" scope="col">Dosis</th>
+                    <th class="table-header-custom" scope="col">Acciones</th>
+                </tr>
+                {% for alimentacion in alimentaciones %}
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>{{alimentacion.idalimentacion}}</td>
+                    <td>{{alimentacion.descripcion}}</td>
+                    <td>{{alimentacion.dosis}} KG</td>
+                    <td>
+
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#eliminarAlimentoModal"
+                            onclick="setEliminarAlimento('{{ alimentacion.idalimentacion }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-trash" viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                <path
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                            </svg>
+                        </button>
+
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            onclick="setEditarAlimento('{{ alimentacion.idalimentacion }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-pencil" viewBox="0 0 16 16">
+                                <path
+                                    d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <li>No articles yet.</li>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modal modificar información del cliente -->
+<!-- Modal para editar la información del cliente -->
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Agregar cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <form action="agregarAlimentacion" method="POST">
+                        {% csrf_token %}
+
+                        <input type="hidden" id="idalimentacion" name="idalimentacion">
+
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción:</label>
+                            <input id="descripcion" type="text" class="form-control" name="descripcion" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="dosis" class="form-label">Dosis:</label>
+                            <input id="number" type="text" class="form-control" name="dosis" required>
+                        </div>
+
+                        <input type="submit" class="btn btn-success" value="Agregar alimento">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="eliminarAlimentoModal" tabindex="-1" aria-labelledby="eliminarAlimentoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eliminarAlimentoLabel">Eliminar alimento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que quieres eliminar este alimento? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <!-- Botón que confirma la eliminación -->
+                <a id="confirmarEliminarBtn" href="#" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal editar dosis -->
+
+<div class="modal fade" id="editarDosisModal" tabindex="-1" aria-labelledby="editarDosisLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarPorcinoLabel">Editar Información del porcino</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para actualizar el cliente -->
+                <form id="formEditarDosis" method="POST" action="#">
+                    {% csrf_token %}
+                    <!-- Campo para Cédula (no editable) -->
+                    <div class="mb-3">
+                        <label for="modal-dosis-mod" class="form-label">Dosis:</label>
+                        <input id="modal-dosis-mod" type="text" class="form-control" name="dosis">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/alimentos.js' %}"></script>{% endblock %}
+
+
+
+{% endblock %}

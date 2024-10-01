@@ -20,6 +20,7 @@ class CreateClienteMutation(graphene.Mutation):
         telefono = graphene.Int()
     
     cliente = graphene.Field(ClienteType)
+    success = graphene.Boolean()
 
     def mutate(self, info, cedula, nombre, apellidos, direccion, telefono):
         payload = {
@@ -41,7 +42,7 @@ class CreateClienteMutation(graphene.Mutation):
                 direccion=data["direccion"],
                 telefono=data["telefono"]
             )
-            return CreateClienteMutation(cliente=cliente)
+            return CreateClienteMutation(cliente=cliente, success = True)
         else:
             raise Exception('Error al consumir la API')
 
@@ -72,6 +73,7 @@ class UpdateClienteMutation(graphene.Mutation):
     
     cliente = graphene.Field(ClienteType)
     message = graphene.String()
+    success = graphene.Boolean()
 
     def mutate(self, info, cedula, nombre=None, apellidos=None, direccion=None, telefono=None):
        
@@ -106,7 +108,7 @@ class UpdateClienteMutation(graphene.Mutation):
                 direccion=data['direccion'],
                 telefono=data['telefono']
             )
-            return UpdateClienteMutation(message="Actualizado con exito",cliente=cliente)
+            return UpdateClienteMutation(message="Actualizado con exito",cliente=cliente, success = True)
         else:
             return UpdateClienteMutation(message=f'Error al eliminar el cliente: {response.status_code} - {response.text}')
 

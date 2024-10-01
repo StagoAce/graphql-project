@@ -1,0 +1,253 @@
+{% extends 'mi_app/base.html' %}
+
+{% load static %}
+
+{% block title %} Inicio {% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid h-100 d-flex flex-column p-3 gap-3">
+    <div class="container-fluid d-flex flex-column p-3">
+        <div class="row">
+            <!-- Introduccion de la pagina -->
+            <div class="col  ">
+                <h1 class="display-3">Porcinos</h1>
+                <p class="">En este apartado encontraras la información importante sobre los porcinos de tu granja, como
+                    su ID,
+                    peso, raza y
+                    Alimentación, demas información desde los botones en la sección de acciones.</p>
+            </div>
+
+            <!-- Información sobre botones disponibles para clientes registrados -->
+            <div class="col d-grid gap-3">
+                <div>
+                    <p>Las acciones disponibles para los porcinos registrados son: </p>
+                    <button type="button" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-search" viewBox="0 0 16 16">
+                            <path
+                                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                        </svg>
+                    </button>
+                    <span>Ver información completa</span>
+                </div>
+
+                <div>
+                    <button type="button" class="btn btn-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-trash" viewBox="0 0 16 16">
+                            <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                            <path
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                        </svg>
+                    </button>
+                    <span>Eliminar porcino</span>
+                </div>
+
+                <div>
+                    <button type="button" class="btn btn-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path
+                                d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+                        </svg>
+                    </button>
+                    <span>Actualizar información del porcino </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de porcinos registrados en la base de datos -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="table-header-custom" scope="col">Id </th>
+                    <th class="table-header-custom" scope="col">Edad</th>
+                    <th class="table-header-custom" scope="col">Peso</th>
+                    <th class="table-header-custom" scope="col">Raza</th>
+                    <th class="table-header-custom" scope="col">Id propietario</th>
+                    <th class="table-header-custom" scope="col">Acciones</th>
+                </tr>
+                {% for porcino in porcinos %}
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>{{porcino.idporcinos}}</td>
+                    <td>{{porcino.edad}}</td>
+                    <td>{{porcino.peso}}</td>
+                    <td>{{porcino.razas_idrazas.name}}</td>
+                    <td>{{porcino.clientes_cedula.cedula}}</td>
+                    <td>
+
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoModal"
+                            onclick="loadPorcinoInfo('{{ porcino.idporcinos }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-search" viewBox="0 0 16 16">
+                                <path
+                                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                            </svg>
+                        </button>
+
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#eliminarPorcinoModal"
+                            onclick="setEliminarPorcino('{{ porcino.idporcinos }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-trash" viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                <path
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                            </svg>
+                        </button>
+
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            onclick="setEditarPorcino('{{ porcino.idporcinos }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-pencil" viewBox="0 0 16 16">
+                                <path
+                                    d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <li>No articles yet.</li>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modal modificar información del cliente -->
+<!-- Modal para editar la información del cliente -->
+<div class="modal fade" id="editarPorcinoModal" tabindex="-1" aria-labelledby="editarPorcinoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarPorcinoLabel">Editar Información del porcino</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para actualizar el cliente -->
+                <form id="formEditarPorcino" method="POST" action="#">
+                    {% csrf_token %}
+                    <!-- Campo para Cédula (no editable) -->
+                    <div class="mb-3">
+                        <label for="modal-idporcino-mod" class="form-label">Id porcino:</label>
+                        <input id="modal-idporcino-mod" type="text" class="form-control" name="modal-idporcino-mod"
+                            readonly>
+                    </div>
+                    <!-- Campo para Nombre -->
+                    <div class="mb-3">
+                        <label for="modal-edad-mod" class="form-label">Edad:</label>
+                        <input id="modal-edad-mod" type="text" class="form-control" name="edad" required>
+                    </div>
+                    <!-- Campo para Apellidos -->
+                    <div class="mb-3">
+                        <label for="modal-peso-mod" class="form-label">Peso:</label>
+                        <input id="modal-peso-mod" type="text" class="form-control" name="peso" required>
+                    </div>
+                    <!-- Campo para Teléfono -->
+                    <div class="mb-3">
+                        <label for="modal-idpropietario-mod" class="form-label">Id propietario:</label>
+                        <input id="modal-idpropietario-mod" type="text" class="form-control"
+                            name="modal-idpropietario-mod" readonly>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal mostrar información detallada -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Información del porcino</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Aquí se llenarán los datos del cliente de manera dinámica -->
+                <p><strong>Id:</strong> <span id="modal-idporcino"></span></p>
+                <p><strong>Edad:</strong> <span id="modal-edad"></span></p>
+                <p><strong>Peso:</strong> <span id="modal-peso"></span></p>
+                <p><strong>Raza:</strong> <span id="modal-raza"></span></p>
+                <p><strong>Id propietario:</strong> <span id="modal-idpropietario"></span></p>
+                <p><strong>Alimentación:</strong> <span id="modal-alimentacion"></span></p>
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="eliminarPorcinoModal" tabindex="-1" aria-labelledby="eliminaPorcinoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eliminaPorcinoLabel">Eliminar porcino</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que quieres eliminar este porcino? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <!-- Botón que confirma la eliminación -->
+                <a id="confirmarEliminarBtn" href="#" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="alimentacionPorcinoModal" tabindex="-1" aria-labelledby="alimentacionPorcinoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alimentacionPorcinoLabel">Agregar alimentacion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para actualizar el cliente -->
+                <form id="formEditarPorcino" method="POST" action="#">
+                    {% csrf_token %}
+                    <!-- Campo para Cédula (no editable) -->
+                    <div class="mb-3">
+                        <label for="alimentacion" class="form-label">Alimentación:</label>
+                        <select id="alimentacion" name="alimentacion" class="form-control" required>
+                            <option value="">Selecciona un alimento</option>
+                            {% for alimento in alimentaciones %}
+                            <option value="{{ alimento.idalimentacion }}">
+                                {{ alimento.descripcion }} - {{alimento.dosis}} KG</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/porcinos.js' %}"></script>{% endblock %}
+
+
+
+{% endblock %}
