@@ -24,6 +24,10 @@ def get_instance_cliente(clientes_cedula):
     cliente_data = cliente_response.json()
     cliente_instance = ClienteType(
         cedula=cliente_data['cedula'],
+        nombre = cliente_data['nombre'],
+        apellidos = cliente_data['apellidos'],
+        direccion = cliente_data['direccion'],
+        telefono = cliente_data['telefono'],
     )
     return cliente_instance
     
@@ -34,11 +38,12 @@ class PorcinoType(DjangoObjectType):
         fields = ("idporcinos","edad","peso","razas_idrazas","clientes_cedula")
 
     clientes_cedula = graphene.Field(ClienteType)
+    razas_idrazas = graphene.Field(RazaType)
 
 class Query(graphene.ObjectType):
     porcinos = graphene.List(PorcinoType)
     porcino_uno = graphene.Field(PorcinoType, idporcinos=graphene.ID())
-
+    porcino_cliente = graphene.List(PorcinoType, cedula=graphene.Int(required=True))
 
     def resolve_porcinos(self, info):
         url = BASE_URL + ""
@@ -148,6 +153,31 @@ class Query(graphene.ObjectType):
         
         else:
             return JsonResponse({'error': 'Error al consumir la API de porcinos'}, status=response.status_code)
+
+    def resolve_porcino_cliente(self, info, cedula):
+        url = f"http://127.0.0.1:8000/api/v1/porcinos/?clientes_cedula={cedula}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            porcinos_list = []
+
+            for porcino_data in data:
+                
+                raza = get_instance_raza(porcino_data["razas_idrazas"])
+
+                cliente =  get_instance_cliente(porcino_data["clientes_cedula"])
+
+                porcino = PorcinoType(
+                    idporcinos=porcino_data["idporcinos"],
+                    edad=porcino_data["edad"],
+                    peso=porcino_data["peso"],
+                    razas_idrazas= raza,
+                    clientes_cedula = cliente
+                )
+                porcinos_list.append(porcino)
+            return porcinos_list
+        else:
+            raise Exception(f'Error al consumir la API: {response.status_code}')
 
 class CreatePorcinoMutation(graphene.Mutation):
     class Arguments:
