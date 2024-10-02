@@ -71,3 +71,27 @@ class Query(graphene.ObjectType):
             return None  # Si no hay datos, devuelve None
         else:
             return JsonResponse({'error': 'Error al consumir la API'}, status=response.status_code)
+
+class CreatePorcinosAlimentosMutation(graphene.Mutation):
+    class Arguments:
+        porcinos_idporcinos = graphene.Int()
+        alimentacion_idalimentacion = graphene.Int()
+
+    success = graphene.Boolean()
+
+    def mutate(self, info, porcinos_idporcinos, alimentacion_idalimentacion):
+        payload = {
+            "porcinos_idporcinos" : porcinos_idporcinos,
+            "alimentacion_idalimentacion" : alimentacion_idalimentacion
+        }
+
+        url = BASE_URL + ""
+        response = requests.post(url, json=payload)
+        if response.status_code == 200 or response.status_code == 201:
+            data = response.json()
+            return CreatePorcinosAlimentosMutation(success = True)
+        else:
+            raise Exception('Error al consumir la API ', Success = False)
+
+class PorcinosAlimentosMutation(graphene.ObjectType):
+    create_porcinosalimentos = CreatePorcinosAlimentosMutation.Field()

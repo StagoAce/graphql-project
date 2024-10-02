@@ -482,7 +482,7 @@ document.getElementById('formAgregarPorcino').addEventListener('submit', async f
             
             const alimentacionQuery = `
                 mutation {
-                    createPorcinoAlimentacion(
+                    createPorcinosalimentos(
                         porcinos_idporcinos: ${porcinoId},
                         alimentacion_idalimentacion: ${alimentacionId}
                     ) {

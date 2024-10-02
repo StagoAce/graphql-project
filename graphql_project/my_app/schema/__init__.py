@@ -2,7 +2,7 @@ import graphene
 from .schema_clientes import Query as ClientesQuery, ClientesMutation
 from .schema_porcinos import Query as PorcinosQuery, PorcinosMutation
 from .schema_alimentos import Query as AlimentosQuery, AlimentosMutation
-from .schema_porcinos_alimentacion import Query as PorcinosAlimentosQuery
+from .schema_porcinos_alimentacion import Query as PorcinosAlimentosQuery, PorcinosAlimentosMutation
 from .schema_razas import Query as RazasQuery
 
 
@@ -10,7 +10,7 @@ from .schema_razas import Query as RazasQuery
 class Query(ClientesQuery,PorcinosQuery, AlimentosQuery,PorcinosAlimentosQuery,RazasQuery, graphene.ObjectType):
     pass
 
-class Mutation(ClientesMutation,AlimentosMutation,PorcinosMutation, graphene.ObjectType):
+class Mutation(ClientesMutation,AlimentosMutation,PorcinosMutation, PorcinosAlimentosMutation, graphene.ObjectType):
     pass
 
 # Definir el esquema con queries y mutaciones
