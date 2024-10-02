@@ -8,6 +8,17 @@ from .schema_razas import RazaType
 
 BASE_URL = "http://127.0.0.1:8000/api/v1/porcinos/"
 
+def get_instance_raza(razas_idrazas):
+    razas_url = f"http://127.0.0.1:8000/api/v1/razas/{razas_idrazas}"
+    razas_response = requests.get(razas_url)
+    raza_data = razas_response.json()
+    raza_instance = RazaType(
+                idrazas=raza_data['idrazas'],
+                name=raza_data['name']
+            )
+    return raza_instance
+
+
 class PorcinoType(DjangoObjectType):
     class Meta:
         model = Porcinos
@@ -185,7 +196,6 @@ class CreatePorcinoMutation(graphene.Mutation):
         else:
             raise Exception('Error al consumir la API ')
 
-
 class DeletePorcinoMutation(graphene.Mutation):
     class Arguments:
         idporcino = graphene.ID(required = True)
@@ -203,6 +213,58 @@ class DeletePorcinoMutation(graphene.Mutation):
         else:
             return DeletePorcinoMutation(success = False , message = "Error al eliminar porcino")
 
+class UpdatePorcinoMutation(graphene.Mutation):
+    class Arguments:
+        idporcinos = graphene.ID(required = True)
+        edad = graphene.Int(required = False)
+        peso = graphene.Int(required = False)
+        razas_idrazas = graphene.Int(required = False)
+        clientes_cedula = graphene.Int(required = False)
+
+    porcino = graphene.Field(PorcinoType)
+    message = graphene.String()
+    success = graphene.Boolean()
+
+    def mutate(self, info, idporcinos,razas_idrazas=None, clientes_cedula=None , edad = None, peso = None, ):
+        geturl = BASE_URL + idporcinos + "/"
+        get_response = requests.get(geturl)
+
+        if get_response.status_code != 200:
+            raise Exception(f"Error al obtener los datos del porcino {get_response.status_code}")
+        
+        current_data = get_response.json()
+        print(current_data)
+
+        payload = {
+            "idporcinos" : idporcinos,
+            "edad" : edad if edad is not None else current_data["edad"],
+            "peso" : peso if peso is not None else current_data["peso"],
+            "razas_idrazas": razas_idrazas if razas_idrazas is not None else current_data["razas_idrazas"],
+            "clientes_cedula": clientes_cedula if clientes_cedula is not None else current_data["clientes_cedula"]
+        }
+
+        url = BASE_URL + idporcinos + "/"
+        response = requests.put(url, json=payload)
+
+        raza = get_instance_raza(current_data["razas_idrazas"])
+
+        if response.status_code == 200:
+            data = response.json()
+
+            porcino = PorcinoType(
+                idporcinos = data['idporcinos'],
+                peso = data['peso'],
+                edad = data['edad'],
+                razas_idrazas=raza,
+                clientes_cedula=clientes_cedula if clientes_cedula else current_data['clientes_cedula']
+            )
+
+            return UpdatePorcinoMutation(message = "Actualizado", porcino = porcino, success = True)
+        
+        else:
+            return UpdatePorcinoMutation(message=f'Error al editar el porcino: {response.status_code} - {response.text}')
+
 class PorcinosMutation(graphene.ObjectType):
     create_porcino = CreatePorcinoMutation.Field()
     delete_porcino = DeletePorcinoMutation.Field()
+    update_porcino = UpdatePorcinoMutation.Field()
