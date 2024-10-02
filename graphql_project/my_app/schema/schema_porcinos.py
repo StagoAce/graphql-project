@@ -18,6 +18,15 @@ def get_instance_raza(razas_idrazas):
             )
     return raza_instance
 
+def get_instance_cliente(clientes_cedula):
+    cliente_url = f"http://127.0.0.1:8000/api/v1/clientes/ {clientes_cedula}"
+    cliente_response = requests.get(cliente_url)
+    cliente_data = cliente_response.json()
+    cliente_instance = ClienteType(
+        cedula=cliente_data['cedula'],
+    )
+    return cliente_instance
+    
 
 class PorcinoType(DjangoObjectType):
     class Meta:
@@ -233,7 +242,6 @@ class UpdatePorcinoMutation(graphene.Mutation):
             raise Exception(f"Error al obtener los datos del porcino {get_response.status_code}")
         
         current_data = get_response.json()
-        print(current_data)
 
         payload = {
             "idporcinos" : idporcinos,
@@ -247,6 +255,7 @@ class UpdatePorcinoMutation(graphene.Mutation):
         response = requests.put(url, json=payload)
 
         raza = get_instance_raza(current_data["razas_idrazas"])
+        cliente = get_instance_cliente(current_data["clientes_cedula"])
 
         if response.status_code == 200:
             data = response.json()
@@ -256,7 +265,7 @@ class UpdatePorcinoMutation(graphene.Mutation):
                 peso = data['peso'],
                 edad = data['edad'],
                 razas_idrazas=raza,
-                clientes_cedula=clientes_cedula if clientes_cedula else current_data['clientes_cedula']
+                clientes_cedula=cliente
             )
 
             return UpdatePorcinoMutation(message = "Actualizado", porcino = porcino, success = True)
