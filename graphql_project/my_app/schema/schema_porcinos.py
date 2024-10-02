@@ -186,5 +186,23 @@ class CreatePorcinoMutation(graphene.Mutation):
             raise Exception('Error al consumir la API ')
 
 
+class DeletePorcinoMutation(graphene.Mutation):
+    class Arguments:
+        idporcino = graphene.ID(required = True)
+
+    message = graphene.String()
+    success = graphene.Boolean()
+
+    def mutate(self, info, idporcino):
+        url = BASE_URL + idporcino + "/"
+        query = ""
+        json_query = {'query':query}
+        response = requests.delete(url, json=json_query)
+        if response.status_code == 200 or response.status_code == 204:
+            return DeletePorcinoMutation(success = True, message = "Porcino eliminado")
+        else:
+            return DeletePorcinoMutation(success = False , message = "Error al eliminar porcino")
+
 class PorcinosMutation(graphene.ObjectType):
     create_porcino = CreatePorcinoMutation.Field()
+    delete_porcino = DeletePorcinoMutation.Field()
