@@ -64,7 +64,7 @@
 
     <!-- Tabla de porcinos registrados en la base de datos -->
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table id="tabla-porcinos" class="table table-striped">
             <thead>
                 <tr>
                     <th class="table-header-custom" scope="col">Id</th>
@@ -80,11 +80,12 @@
             </tbody>
         </table>
     </div>
+    
 
 </div>
 
-<!-- Modal modificar información del cliente -->
-<!-- Modal para editar la información del cliente -->
+<!-- Modal modificar información del porcino -->
+<!-- Modal para editar la información del porcino -->
 <div class="modal fade" id="editarPorcinoModal" tabindex="-1" aria-labelledby="editarPorcinoLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -150,8 +151,7 @@
 </div>
 
 <!-- Modal de confirmación de eliminación -->
-<div class="modal fade" id="eliminarPorcinoModal" tabindex="-1" aria-labelledby="eliminaPorcinoLabel"
-    aria-hidden="true">
+<div class="modal fade" id="eliminarPorcinoModal" tabindex="-1" aria-labelledby="eliminaPorcinoLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -164,11 +164,12 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <!-- Botón que confirma la eliminación -->
-                <a id="confirmarEliminarBtn" href="#" class="btn btn-danger">Eliminar</a>
+                <button type="button" class="btn btn-danger" onclick="confirmarEliminarPorcino()">Eliminar</button>
             </div>
         </div>
     </div>
 </div>
+
 
 
 <div class="modal fade" id="alimentacionPorcinoModal" tabindex="-1" aria-labelledby="alimentacionPorcinoLabel"
@@ -204,7 +205,8 @@
 
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{% static 'js/porcinos.js' %}"></script>{% endblock %}
+<script src="{% static 'js/porcino.js' %}"></script>
+{% endblock %}
 
 
 
