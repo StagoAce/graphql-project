@@ -469,11 +469,11 @@ document.getElementById('formAgregarPorcino').addEventListener('submit', async f
         console.log(result); // Verificar la respuesta completa
 
         // Manejo de errores
-        if (result.errors) {
-            console.error(result.errors);
-            alert('Error al agregar el porcino: ' + result.errors[0].message);
-            return;
-        }
+        // if (result.errors) {
+        //     console.error(result.errors);
+        //     alert('Error al agregar el porcino: ' + result.errors[0].message);
+        //     return;
+        // }
 
         // Validar el éxito a través del campo 'success'
         if (result.data.createPorcino.success) {
@@ -519,8 +519,8 @@ document.getElementById('formAgregarPorcino').addEventListener('submit', async f
             alert('Error al agregar el porcino. Por favor, intenta de nuevo.');
         }
     } catch (error) {
-        console.error('Error al enviar la solicitud:', error);
-        alert('Error al agregar el porcino. Por favor, intenta de nuevo.');
+        // console.error('Error al enviar la solicitud:', error);
+        // alert('Error al agregar el porcino. Por favor, intenta de nuevo.');
     }
 });
 
