@@ -187,6 +187,7 @@ class CreatePorcinoMutation(graphene.Mutation):
         clientes_cedula = graphene.Int()
 
     porcino = graphene.Field(PorcinoType)
+    success = graphene.Boolean()
 
     def mutate(self, info, edad, peso, razas_idrazas, clientes_cedula):
         payload = {
@@ -231,9 +232,9 @@ class CreatePorcinoMutation(graphene.Mutation):
                 razas_idrazas=raza_instance,  # Usar la respuesta de la API para la raza
                 clientes_cedula=cliente_instance  # Usar la respuesta de la API para el cliente
             )
-            return CreatePorcinoMutation(porcino = porcino)
+            return CreatePorcinoMutation(porcino = porcino, success = True)
         else:
-            raise Exception('Error al consumir la API ')
+            raise Exception('Error al consumir la API ', Success = False)
 
 class DeletePorcinoMutation(graphene.Mutation):
     class Arguments:

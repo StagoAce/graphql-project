@@ -58,7 +58,7 @@ async function loadClienteInfo(cedula) {
         body: JSON.stringify({
             query: `
                 query {
-                    porcinoCliente(cedula: "${cedula}") {
+                    porcinoCliente(cedula: ${cedula}) {
                         idporcinos
                         edad
                         peso
@@ -91,7 +91,7 @@ async function loadClienteInfo(cedula) {
     }
 
     // Llenar la lista de porcinos
-    const cerdosList = document.getElementById('cerdosList'); // Asegúrate de que este elemento exista
+    const cerdosList = document.getElementById('cerdos-list'); // Asegúrate de que este elemento exista
     cerdosList.innerHTML = ''; // Limpiar la lista existente
 
     porcinos.forEach(function(porcino) {
@@ -146,6 +146,10 @@ async function fetchClientes() {
                 <button type="button" class="btn btn-warning" 
                     onclick="setEditarCliente('${cliente.cedula}')">
                     Editar
+                </button>
+                <button type="button" class="btn btn-warning" 
+                    onclick="setAgregarPorcino('${cliente.cedula}')">
+                    Agregar porcino
                 </button>
             </td>
         </tr>
@@ -251,8 +255,6 @@ document.getElementById('formEditarCliente').addEventListener('submit', function
     actualizarCliente();    
 });
 
-
-
 // Función para eliminar cliente utilizando GraphQL
 async function setEliminarCliente(cedula) {
     const confirmar = confirm("¿Estás seguro de que deseas eliminar este cliente?");
@@ -349,10 +351,177 @@ document.getElementById('agregarClienteForm').addEventListener('submit', async f
     $('#exampleModal').modal('hide');
 });
 
-
 function setClienteCedula(cedula){
     document.getElementById('cliente_cedula').value = cedula;
     console.log(cedula)
 }
+
+async function setAgregarPorcino(clienteCedula) {
+    // Establecer el valor del cliente_cedula en el modal
+    document.getElementById('cliente_cedula').value = clienteCedula;
+
+    // Realiza la consulta a GraphQL para obtener razas y alimentos
+    try {
+        const response = await fetch('graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                query: `
+                    query {
+                        razas {
+                            idrazas
+                            name
+                        }
+                        alimentos {
+                            idalimentacion
+                            descripcion
+                            dosis
+                        }
+                    }
+                `
+            })
+        });
+
+        const result = await response.json();
+
+        // Manejo de errores
+        if (result.errors) {
+            console.error(result.errors);
+            alert('Error al obtener datos: ' + result.errors[0].message);
+            return;
+        }
+
+        // Llenar el select de razas
+        const razasSelect = document.getElementById('razas_idrazas');
+        razasSelect.innerHTML = '<option value="">Selecciona una raza</option>'; // Reinicia las opciones
+
+        result.data.razas.forEach(raza => {
+            razasSelect.innerHTML += `<option value="${raza.idrazas}">${raza.name}</option>`;
+        });
+
+        // Llenar el select de alimentaciones
+        const alimentacionSelect = document.getElementById('alimentacion');
+        alimentacionSelect.innerHTML = '<option value="">Selecciona un alimento</option>'; // Reinicia las opciones
+
+        result.data.alimentos.forEach(alimento => { // Corregido aquí
+            alimentacionSelect.innerHTML += `<option value="${alimento.idalimentacion}">${alimento.descripcion} - ${alimento.dosis} KG</option>`;
+        });
+
+        // Abre el modal
+        $('#porcinoClienteModal').modal('show');
+
+    } catch (error) {
+        console.error('Error en la consulta GraphQL:', error);
+        alert('Error al obtener los datos para el modal: ' + error.message); // Añadido detalle del error
+    }
+}
+
+
+document.getElementById('formAgregarPorcino').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Evitar el envío del formulario por defecto
+
+    // Recoger los valores del formulario
+    const clienteCedula = document.getElementById('cliente_cedula').value;
+    const edad = document.getElementById('edad').value;
+    const peso = document.getElementById('peso').value;
+    const razasIdrazas = document.getElementById('razas_idrazas').value;
+    const alimentacionId = document.getElementById('alimentacion').value; // ID del alimento seleccionado
+
+    // Verifica que el CSRF Token esté definido
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Asegúrate de que esta línea esté correcta
+    if (!csrfToken) {
+        console.error('CSRF Token no está definido.');
+        alert('Error: CSRF Token no está disponible.');
+        return;
+    }
+
+    // Construir la consulta GraphQL para agregar el porcino
+    const query = `
+        mutation {
+            createPorcino(
+                clientesCedula: ${clienteCedula},
+                edad: ${edad},
+                peso: ${peso},
+                razasIdrazas: ${razasIdrazas}
+            ) {
+                success
+                porcino {
+                    idporcinos
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch('graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({ query }),
+        });
+
+        const result = await response.json();
+        console.log(result); // Verificar la respuesta completa
+
+        // Manejo de errores
+        if (result.errors) {
+            console.error(result.errors);
+            alert('Error al agregar el porcino: ' + result.errors[0].message);
+            return;
+        }
+
+        // Validar el éxito a través del campo 'success'
+        if (result.data.createPorcino.success) {
+            // Si la creación del porcino fue exitosa, entonces crear la relación de alimentación
+            const porcinoId = result.data.createPorcino.porcino.idporcinos; // Obtener el ID del porcino creado
+            
+            const alimentacionQuery = `
+                mutation {
+                    createPorcinoAlimentacion(
+                        porcinos_idporcinos: ${porcinoId},
+                        alimentacion_idalimentacion: ${alimentacionId}
+                    ) {
+                        success
+                    }
+                }
+            `;
+
+            const alimentacionResponse = await fetch('graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ query: alimentacionQuery }),
+            });
+
+            const alimentacionResult = await alimentacionResponse.json();
+
+            // Validar el éxito de la alimentación
+            if (alimentacionResult.errors) {
+                console.error(alimentacionResult.errors);
+                alert('Error al agregar la alimentación: ' + alimentacionResult.errors[0].message);
+                return;
+            }
+
+            if (alimentacionResult.data.createPorcinoAlimentacion.success) {
+                alert('Porcino y alimentación agregados exitosamente.');
+                $('#porcinoClienteModal').modal('hide');
+            } else {
+                alert('Error al agregar la alimentación. Por favor, intenta de nuevo.');
+            }
+        } else {
+            alert('Error al agregar el porcino. Por favor, intenta de nuevo.');
+        }
+    } catch (error) {
+        console.error('Error al enviar la solicitud:', error);
+        alert('Error al agregar el porcino. Por favor, intenta de nuevo.');
+    }
+});
 
 

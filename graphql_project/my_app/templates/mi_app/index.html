@@ -157,49 +157,47 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div>
+                <form id="formAgregarPorcino" method="POST">
+                    <input type="hidden" id="cliente_cedula" name="cliente_cedula">
 
-                    <form action="agregar_porcino" method="post">
+                    <div class="mb-3">
+                        <label for="edad" class="form-label">Edad:</label>
+                        <input id="edad" type="number" class="form-control" name="edad" required>
+                    </div>
 
-                        <input type="hidden" id="cliente_cedula" name="cliente_cedula">
+                    <div class="mb-3">
+                        <label for="peso" class="form-label">Peso:</label>
+                        <input id="peso" type="text" class="form-control" name="peso" required>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="edad" class="form-label">Edad:</label>
-                            <input id="edad" type="number" class="form-control" name="edad" required>
-                        </div>
+                    <div class="mb-3">
+                        <label for="razas_idrazas" class="form-label">Raza:</label>
+                        <select id="razas_idrazas" name="razas_idrazas" class="form-control" required>
+                            <option value="">Selecciona una raza</option>
+                            {% for raza in razas %}
+                            <option value="{{ raza.idrazas }}">{{ raza.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="peso" class="form-label">Peso:</label>
-                            <input id="peso" type="text" class="form-control" name="peso" required>
-                        </div>
+                    <div class="mb-3">
+                        <label for="alimentacion" class="form-label">Alimentación:</label>
+                        <select id="alimentacion" name="alimentacion" class="form-control" required>
+                            <option value="">Selecciona un alimento</option>
+                            {% for alimento in alimentaciones %}
+                            <option value="{{ alimento.idalimentacion }}">
+                                {{ alimento.descripcion }} - {{alimento.dosis}} KG</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="razas_idrazas" class="form-label">Raza:</label>
-                            <select id="razas_idrazas" name="razas_idrazas" class="form-control" required>
-                                <option value="">Selecciona una raza</option>
-                                {% for raza in razas %}
-                                <option value="{{ raza.idrazas }}">{{ raza.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="alimentacion" class="form-label">Alimentación:</label>
-                            <select id="alimentacion" name="alimentacion" class="form-control" required>
-                                <option value="">Selecciona un alimento</option>
-                                {% for alimento in alimentaciones %}
-                                <option value="{{ alimento.idalimentacion }}">
-                                    {{ alimento.descripcion }} - {{alimento.dosis}} KG</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                </div>
-                <input type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success">Agregar porcino</button>
+                </form>
             </div>
-            </form>
         </div>
     </div>
 </div>
+
 </div>
 
 
